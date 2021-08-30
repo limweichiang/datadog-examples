@@ -1,0 +1,84 @@
+{
+  "family": "<TASK_NAME>",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "datadog-agent",
+      "image": "datadog/agent:latest",
+      "essential": true,
+      "environment": [
+        {
+          "name": "DD_API_KEY",
+          "value": "<DATADOG_API_KEY>"
+        },
+        {
+          "name": "ECS_FARGATE",
+          "value": "true"
+        },
+        {
+          "name": "DD_APM_ENABLED",
+          "value": "true"
+        }
+      ]
+    },
+    {
+      "name": "log_router",
+      "image": "amazon/aws-for-fluent-bit:latest",
+      "essential": true,
+      "firelensConfiguration": {
+        "type": "fluentbit",
+        "options": {
+          "enable-ecs-log-metadata": "true",
+          "config-file-type": "file",
+          "config-file-value": "/fluent-bit/configs/parse-json.conf"
+        }
+      }
+    },
+    {
+      "name": "<APP_NAME>",
+      "image": "<APP_IMAGE>",
+      "essential": true,
+      "environment": [
+        {
+          "name": "DD_ENV",
+          "value": "<APP_ENV>"
+        },
+        {
+          "name": "DD_SERVICE",
+          "value": "<APP_SERVICE>"
+        },
+        {
+          "name": "DD_VERSION",
+          "value": "<APP_VERSION>"
+        },
+        {
+          "name": "DD_LOGS_INJECTION",
+          "value": "true"
+        },
+        {
+          "name": "DD_RUNTIME_METRICS_ENABLED",
+          "value": "true"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awsfirelens",
+        "options": {
+          "Name": "datadog",
+          "apikey": "<DATADOG_API_KEY>",
+          "Host": "http-intake.logs.datadoghq.com",
+          "dd_service": "<APP_SERVICE>>",
+          "dd_source": "<APP_LOG_SOURCE>",
+          "dd_message_key": "log",
+          "dd_tags": "project:fluentbit",
+          "TLS": "on",
+          "provider": "ecs"
+        }
+      }
+    }
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "256",
+  "memory": "512"
+}
