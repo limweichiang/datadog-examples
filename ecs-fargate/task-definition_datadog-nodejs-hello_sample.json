@@ -1,0 +1,91 @@
+{
+    "family": "sample-datadog-nodejs-hello",
+    "networkMode": "awsvpc",
+    "containerDefinitions": [
+        {
+            "name": "datadog-agent",
+            "image": "datadog/agent:latest",
+            "essential": true,
+            "environment": [
+                {
+                    "name": "DD_API_KEY",
+                    "value": "<DATADOG_API_KEY>"
+                },
+                {
+                    "name": "ECS_FARGATE",
+                    "value": "true"
+                },
+                {
+                    "name": "DD_APM_ENABLED",
+                    "value": "true"
+                }
+            ]
+        },
+        {
+            "name": "log_router",
+            "image": "amazon/aws-for-fluent-bit:latest",
+            "essential": true,
+            "firelensConfiguration": {
+                "type": "fluentbit",
+                "options": {
+                    "enable-ecs-log-metadata": "true",
+                    "config-file-type": "file",
+                    "config-file-value": "/fluent-bit/configs/parse-json.conf"
+                }
+            }
+        },
+        {
+            "name": "datadog-nodejs-hello",
+            "image": "weichiang/datadog-nodejs-hello:latest",
+            "essential": true,
+            "environment": [
+                {
+                    "name": "DD_ENV",
+                    "value": "dev"
+                },
+                {
+                    "name": "DD_SERVICE",
+                    "value": "hello"
+                },
+                {
+                    "name": "DD_VERSION",
+                    "value": "1.0.0"
+                },
+                {
+                    "name": "DD_LOGS_INJECTION",
+                    "value": "true"
+                },
+                {
+                    "name": "DD_RUNTIME_METRICS_ENABLED",
+                    "value": "true"
+                }
+            ],
+            "portMappings": [
+                {
+                    "containerPort": 8080,
+                    "hostPort": 8080,
+                    "protocol": "tcp"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awsfirelens",
+                "options": {
+                    "Name": "datadog",
+                    "apikey": "<DATADOG_API_KEY>",
+                    "Host": "http-intake.logs.datadoghq.com",
+                    "dd_service": "hello",
+                    "dd_source": "nodejs",
+                    "dd_message_key": "log",
+                    "dd_tags": "project:fluentbit",
+                    "TLS": "on",
+                    "provider": "ecs"
+                }
+            }
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512"
+}
