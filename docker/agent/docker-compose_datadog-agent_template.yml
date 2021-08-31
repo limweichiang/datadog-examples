@@ -1,0 +1,77 @@
+# This is a 'docker-compose.yaml' template that can be used to deploy the
+# Datadog Docker agent. The default options here will perform infrastructure
+# metrics and logs collection.
+#
+# It is possible to enable APM, Live Process Monitoring, Network Process
+# Monitoring by uncommenting the relevant flags/configurations below.
+#
+# If using APM and/or DogStatsD, ensure that you create a bridge network
+# before deploying the agent using this file. The command to do so is:
+#    docker network create app-bridge
+#
+# Your traced application containers must use this app-bridge network
+# when deployed.
+
+version: "3.9"
+services:
+  dd-agent:
+    container_name: dd-agent
+    image: gcr.io/datadoghq/agent:latest
+    restart: unless-stopped
+    environment:
+      - DD_API_KEY=<DATADOG_API_KEY>
+      - DD_LOGS_ENABLED=true
+      - DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
+      - DD_LOGS_CONFIG_DOCKER_CONTAINER_USE_FILE=true
+
+# Uncomment to force log collection of existing containers via log file
+#      - DD_LOGS_CONFIG_DOCKER_CONTAINER_FORCE_USE_FILE=true
+
+# Uncomment if Application Performance Monitoring (APM)is required.
+#      - DD_APM_ENABLED=true
+#      - DD_APM_NON_LOCAL_TRAFFIC=true
+
+# Uncomment if Live Processes is required.
+#      - DD_PROCESS_AGENT_ENABLED=true
+
+# Uncomment if Live Processes and/or Network Performance Monitoring (NPM) is required.
+#      - DD_SYSTEM_PROBE_ENABLED=true
+
+# Uncomment if monitoring the Datadog agent container is not required. Not recommnended.
+#      - DD_CONTAINER_EXCLUDE="name:dd-agent"
+
+# Uncomment if Application Performance Monitoring (APM) and/or DogStatsD is required.
+#    networks:
+#      - app-bridge
+#    ports:
+#      - "8126:8126"
+#      - "8125:8125"
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /opt/datadog-agent/run:/opt/datadog-agent/run:rw
+
+# Uncomment if Live Processes and/or Network Performance Monitoring (NPM) is required.
+#      - /etc/passwd:/etc/passwd:ro
+
+# Uncomment if Network Performance Monitoring (NPM) is required.
+#      - /sys/kernel/debug:/sys/kernel/debug
+
+# Uncomment if Network Performance Monitoring (NPM) is required.
+#    cap_add:
+#      - SYS_ADMIN
+#      - SYS_RESOURCE
+#      - SYS_PTRACE
+#      - NET_ADMIN
+#      - IPC_LOCK
+#    security_opt:
+#      - apparmor:unconfined
+
+# Uncomment if Application Performance Monitoring (APM) or DogStatsD is required.
+#networks:
+#  app-bridge:
+#    external: true
+#    name: app-bridge
