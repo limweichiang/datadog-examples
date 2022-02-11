@@ -1,0 +1,7 @@
+all:
+  children:
+    servers:
+      children:
+        web_servers:
+          hosts:
+            host1.yourhostnamehere.com:
