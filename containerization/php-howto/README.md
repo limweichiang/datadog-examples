@@ -35,4 +35,4 @@ docker run -d -p 8080:80 --network app-bridge \
   && -e DD_VERSION=<VERSION_NUMBER> \
   && --name php-howto-test <YOUR_BUILD_TAG>
 ```
-This assumes you have set up the Datadog Docker agent with a network name of `app-bridge` following the instructions for Tracing from other containers(https://docs.datadoghq.com/containers/docker/apm/?tab=java&tabs=standard#tracing-from-other-containers), and have enabled logging for Docker containers following the instructions at [Docker Log Collection - Container Installation](https://docs.datadoghq.com/containers/docker/log/?tabs=dockerfile#installation)
+This assumes you have set up the Datadog Docker agent with a network name of `app-bridge` following the instructions for [Tracing from other containers](https://docs.datadoghq.com/containers/docker/apm/?tab=java&tabs=standard#tracing-from-other-containers), and have enabled logging for Docker containers following the instructions at [Docker Log Collection - Container Installation](https://docs.datadoghq.com/containers/docker/log/?tabs=dockerfile#installation)
