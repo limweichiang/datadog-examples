@@ -1,0 +1,5 @@
+init_config:
+
+instances:
+  - file: "/full/path/to/filename1.ext"
+  - file: "/full/path/to/filename2.ext"
