@@ -29,10 +29,10 @@ docker logs php-howto-test
 To set up full tracing, you will need to run the following command:
 ```
 docker run -d -p 8080:80 --network app-bridge \
-  && -e DD_AGENT_HOST=datadog-agent \
-  && -e DD_ENV=<ENVIRONMENT_NAME> \
-  && -e DD_SERVICE=<SERVICE_NAME> \
-  && -e DD_VERSION=<VERSION_NUMBER> \
-  && --name php-howto-test <YOUR_BUILD_TAG>
+  -e DD_AGENT_HOST=datadog-agent \
+  -e DD_ENV=<ENVIRONMENT_NAME> \
+  -e DD_SERVICE=<SERVICE_NAME> \
+  -e DD_VERSION=<VERSION_NUMBER> \
+  --name php-howto-test <YOUR_BUILD_TAG>
 ```
 This assumes you have set up the Datadog Docker agent with a network name of `app-bridge` following the instructions for [Tracing from other containers](https://docs.datadoghq.com/containers/docker/apm/?tab=java&tabs=standard#tracing-from-other-containers), and have enabled logging for Docker containers following the instructions at [Docker Log Collection - Container Installation](https://docs.datadoghq.com/containers/docker/log/?tabs=dockerfile#installation)
