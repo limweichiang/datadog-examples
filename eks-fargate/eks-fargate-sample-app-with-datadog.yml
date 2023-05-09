@@ -1,0 +1,81 @@
+## This sample app is taken from AWS documentation, and is provided
+## as a before/after reference. For more information, refer to
+## https://docs.aws.amazon.com/eks/latest/userguide/sample-deployment.html
+##
+## This is the modified 'after' copy of the deployment manifest, which has
+## been configured to include Datadog agents running as sidecar containers
+## for monitoring the EKS Fargate application.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eks-sample-linux-deployment
+  namespace: fargate
+  labels:
+    app: eks-sample-linux-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: eks-sample-linux-app
+  template:
+    metadata:
+      labels:
+        app: eks-sample-linux-app
+    spec:
+      serviceAccountName: datadog-agent
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - arm64
+      containers:
+        - name: nginx
+          image: public.ecr.aws/nginx/nginx:1.21
+          ports:
+            - name: http
+              containerPort: 80
+          imagePullPolicy: IfNotPresent
+        - image: datadog/agent
+          name: datadog-agent
+          env:
+              ## Replace <YOUR_DD_API_KEY> with an API Key from your account.
+            - name: DD_API_KEY
+              value: "<YOUR_DD_API_KEY>"
+              ## Set DD_SITE to "datadoghq.eu" to send your Agent data to the 
+              ## Datadog EU site.
+            - name: DD_SITE
+              value: "datadoghq.com"
+            - name: DD_EKS_FARGATE
+              value: "true"
+              ## Replace <YOUR_EKS_CLUSTER_NAME> with the name of your EKS
+              ## Fargate cluster.
+            - name: DD_CLUSTER_NAME
+              value: "<<YOUR_EKS_CLUSTER_NAME>"
+            - name: DD_KUBERNETES_KUBELET_NODENAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
+      nodeSelector:
+        kubernetes.io/os: linux
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: eks-sample-linux-service
+  namespace: fargate
+  labels:
+    app: eks-sample-linux-app
+spec:
+  selector:
+    app: eks-sample-linux-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
