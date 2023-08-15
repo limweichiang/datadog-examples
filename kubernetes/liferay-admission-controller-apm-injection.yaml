@@ -10,7 +10,7 @@ metadata:
     tags.datadoghq.com/version: "1"
     admission.datadoghq.com/enabled: "true"
   annotations:
-    admission.datadoghq.com/java-lib.version: "v0.114.0"
+    admission.datadoghq.com/java-lib.version: "v1.19.0"
 spec:
   containers:
   - name: liferay
