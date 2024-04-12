@@ -1,0 +1,43 @@
+docker run -d --name dd-agent \
+-e DD_ENV=<ENV> \
+-e DD_API_KEY=<YOUR_DD_API_KEY> \
+-e DD_SITE="<DD_SITE>" \
+-e DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true \
+-e DD_APM_ENABLED=true \
+-e DD_APM_NON_LOCAL_TRAFFIC=true \
+-e DD_APM_RECEIVER_SOCKET=/opt/datadog/apm/inject/run/apm.socket \
+-e DD_LOGS_ENABLED=true \
+-e DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true \
+-e DD_DOGSTATSD_SOCKET=/opt/datadog/apm/inject/run/dsd.socket \
+-e DD_PROCESS_CONFIG_PROCESS_COLLECTION_ENABLED=true \
+-e DD_SYSTEM_PROBE_NETWORK_ENABLED=true \
+-e DD_SYSTEM_PROBE_SERVICE_MONITORING_ENABLED=true \
+-e DD_PROCESS_AGENT_ENABLED=true \
+-v /opt/datadog/apm:/opt/datadog/apm \
+-v /var/run/docker.sock:/var/run/docker.sock:ro \
+-v /proc/:/host/proc/:ro \
+-v /sys/fs/cgroup/:/host/sys/fs/cgroup:ro \
+-v /var/lib/docker/containers:/var/lib/docker/containers:ro \
+-v /opt/datadog-agent/run:/opt/datadog-agent/run:rw \
+-v /sys/kernel/debug:/sys/kernel/debug \
+-v /lib/modules:/lib/modules:ro \
+-v /usr/src:/usr/src:ro \
+-v /var/tmp/datadog-agent/system-probe/build:/var/tmp/datadog-agent/system-probe/build \
+-v /var/tmp/datadog-agent/system-probe/kernel-headers:/var/tmp/datadog-agent/system-probe/kernel-headers \
+-v /etc/apt:/host/etc/apt:ro \
+-v /etc/yum.repos.d:/host/etc/yum.repos.d:ro \
+-v /etc/zypp:/host/etc/zypp:ro \
+-v /etc/pki:/host/etc/pki:ro \
+-v /etc/yum/vars:/host/etc/yum/vars:ro \
+-v /etc/dnf/vars:/host/etc/dnf/vars:ro \
+-v /etc/rhsm:/host/etc/rhsm:ro \
+--security-opt apparmor:unconfined \
+--cap-add=SYS_ADMIN \
+--cap-add=SYS_RESOURCE \
+--cap-add=SYS_PTRACE \
+--cap-add=NET_ADMIN \
+--cap-add=NET_BROADCAST \
+--cap-add=NET_RAW \
+--cap-add=IPC_LOCK \
+--cap-add=CHOWN \
+gcr.io/datadoghq/agent:7
