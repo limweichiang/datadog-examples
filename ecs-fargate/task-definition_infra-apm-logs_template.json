@@ -60,6 +60,11 @@
           "value": "true"
         }
       ],
+      "dockerLabels": {
+        "com.datadoghq.tags.env": "<APP_ENV>",
+        "com.datadoghq.tags.service": "<APP_SERVICE>",
+        "com.datadoghq.tags.version": "<APP_VERSION>"
+      },
       "logConfiguration": {
         "logDriver": "awsfirelens",
         "options": {
