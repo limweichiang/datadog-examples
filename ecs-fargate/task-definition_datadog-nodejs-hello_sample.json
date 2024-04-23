@@ -60,6 +60,11 @@
                     "value": "true"
                 }
             ],
+            "dockerLabels": {
+                "com.datadoghq.tags.env": "dev",
+                "com.datadoghq.tags.service": "hello",
+                "com.datadoghq.tags.version": "1.0.0"
+            },
             "portMappings": [
                 {
                     "containerPort": 8080,
