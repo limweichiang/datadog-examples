@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: liferay
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: liferay
+  template:
+    metadata:
+      labels:
+        app: liferay
+        app.kubernetes.io/name: liferay
+        tags.datadoghq.com/env: "testdev"
+        tags.datadoghq.com/service: "liferay"
+        tags.datadoghq.com/version: "1"
+    spec:
+      containers:
+      - name: liferay
+        image: liferay/portal:7.4.3.48-ga48
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DD_ENV
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['tags.datadoghq.com/env']
+        - name: DD_SERVICE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['tags.datadoghq.com/service']
+        - name: DD_VERSION
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.labels['tags.datadoghq.com/version']
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: liferay-service
+spec:
+  selector:
+    app.kubernetes.io/name: liferay
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
